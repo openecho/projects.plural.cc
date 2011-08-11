@@ -1,0 +1,24 @@
+<% html_title @paste.title %>
+
+<h2><%=l :label_paste_edit, :link => link_to_paste(@paste) %></h2>
+
+<p>
+<%= render :partial => "authorship", :locals => { :paste => @paste } %>
+</p>
+
+<% labelled_tabular_form_for :paste, @paste,
+   :url => { :action => "update", :id => @paste },
+   :html => { :method => :put } do |f| %>
+<div class="box">
+  <%= hidden_field_tag "fork" %>
+
+  <p><%= f.text_field :title %></p>
+  <p><%= f.select :lang, pastebin_language_choices %></p>
+  <p><%= f.text_area :text, :rows => 25, :cols => 80 %></p>
+</div>
+
+<%=l :text_paste_update_or_make_new,
+   :update => f.submit(l(:button_paste_update)),
+   :make_new => submit_tag(l(:button_paste_make_new),
+                           :onclick => "$('fork').value = 'yes'") %>
+<% end %>
