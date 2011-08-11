@@ -1,0 +1,37 @@
+h1. Blazing Textiles
+
+Blazing Textiles is a "Redmine":http://www.redmine.org/ plugin that is designed to add enhance the core functionality without modifying the original source. As such, you can install this plugin and use it as your default _Text Formatter_ and it will continue to mark up the pages that you already have created in Redmine. If you don't like it, then you can simply switch back to the default *textile* _Text Formatter_.
+
+h2. Feature Roadmap
+
+h3. Textile Support
+
+Textile support in the form,
+
+<code>
+<pre class="textile">
+    $E = mc^2$
+</pre>
+</code>
+
+h3. html Support
+
+<code>
+<pre class="html">
+    $E = mc^2$
+</pre>
+</code>
+
+
+h3. Youtube video embedding
+
+h2. Install
+
+h3. Requirements
+
+TBD
+
+h3. Installing the plugin
+
+
+h3. Configuring the plugin
