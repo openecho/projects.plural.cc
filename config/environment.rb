@@ -52,6 +52,9 @@ Rails::Initializer.run do |config|
 
   config.gem 'rubytree', :lib => 'tree'
   config.gem 'coderay', :version => '~>0.9.7'
+#  config.gem "inherited_resources", :version => "1.0.2"
+#  config.gem "responders", :version => "0.4.2"
+
   
   # Load any local configuration that is kept out of source control
   # (e.g. gems, patches).
