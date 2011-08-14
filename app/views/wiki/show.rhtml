@@ -14,12 +14,12 @@
 <%= wiki_page_breadcrumb(@page) %>
 
 <% if @content.version != @page.content.version %>
-    <p>    
+    <p>
     <%= link_to(("\xc2\xab " + l(:label_previous)),
                 :action => 'show', :id => @page.title, :project_id => @page.project,
                 :version => (@content.version - 1)) + " - " if @content.version > 1 %>
     <%= "#{l(:label_version)} #{@content.version}/#{@page.content.version}" %>
-    <%= '(' + link_to('diff', :controller => 'wiki', :action => 'diff',
+    <%= '(' + link_to(l(:label_diff), :controller => 'wiki', :action => 'diff',
                       :id => @page.title, :project_id => @page.project,
                       :version => @content.version) + ')' if @content.version > 1 %> - 
     <%= link_to((l(:label_next) + " \xc2\xbb"), :action => 'show',
