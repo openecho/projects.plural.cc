@@ -1,0 +1,35 @@
+<script type="text/javascript"> 
+//<![CDATA[
+dojo.require("dojo.io.script");
+dojo.ready(function() {
+  dojo.io.script.get({
+	url: "http://plural.cc/site/bar.json",
+	callbackParamName: "callback",
+	content: {
+		page: "gallery"
+	},
+	load: function(data) {
+		var menu = dojo.byId('menu');
+		dojo.forEach(data, function(entry, i) {
+				var item = dojo.create('li', {}, menu, 'last');
+				var span = dojo.create('span', {}, item);
+				var link = dojo.create('a',{href: entry.url, innerHTML: entry.page}, span);
+				dojo.style(link, "opacity", "0");
+				dojo.fadeIn({node: link}).play();
+		});
+	}
+  });
+});
+ 
+//]]>
+</script>
+<div id="sitebar">
+	<div>
+		<ul id="menu">
+		</ul>
+	</div>
+	<div>
+		<ul id="actions">
+		</ul>
+	</div>
+</div>

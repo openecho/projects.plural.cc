@@ -23,7 +23,7 @@ class Unauthorized < Exception; end
 class ApplicationController < ActionController::Base
   include Redmine::I18n
 
-  layout 'base'
+  layout 'plural'
   exempt_from_layout 'builder', 'rsb'
   
   protect_from_forgery
