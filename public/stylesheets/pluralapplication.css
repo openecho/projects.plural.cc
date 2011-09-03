@@ -365,8 +365,8 @@ div.square {
 .message .contextual { margin-top: 0; }
 
 
-.splitcontentleft{float:left; width:49%;}
-.splitcontentright{float:right; width:49%;}
+.splitcontentleft{float:left; width:59%;}
+.splitcontentright{float:right; width:39%;}
 
 
 form {display: inline;}
