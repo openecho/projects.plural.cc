@@ -10,6 +10,11 @@
 	padding-top: 10px;
 }
 
+#main {
+	border-top: 1px solid #E4E4E4;
+	border-right: 1px solid #E4E4E4;
+	border-left: 1px solid #E4E4E4;
+}
 
 #top-menu {
 	background: #638F1A; 
@@ -117,7 +122,7 @@
 
 #sidebar {
 	float: right; 
-	width: 22%; 
+	width: 15%; 
 	position: relative; 
 	z-index: 9; 
 	padding: 0; 
@@ -149,17 +154,16 @@
 }
 
 #content { 
-	width: 75%; 
-	background-color: #fff; 
-	margin-top: 20px; 
-	border-top: 1px solid #ddd; 
+	width: 82%; 
+	background-color: #fff;
 	border-right: 1px solid #ddd; 
 	padding-right: 10px;
+	padding-left: 10px;
 	/* padding: 6px 10px 10px 10px; */
 	z-index: 10; 
 }
 * html #content { 
-	width: 75%; 
+	width: 82%; 
 	padding-left: 0; 
 	margin-top: 0px; 
 	padding: 6px 10px 10px 10px;
@@ -189,9 +193,13 @@ a.issue.closed, a.issue.closed:link, a.issue.closed:visited { color: #999; text-
 
 
 .splitcontentleft {
-	border-top: 1px solid #E4E4E4;
+	
 }
 
+#content ul, ol .projects {
+	padding-left: 0;
+	list-style-type: none;
+}
 
 
 
