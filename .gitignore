@@ -23,4 +23,8 @@
 /tmp/test/*
 /vendor/rails
 *.rbc
-.git
+
+/.bundle
+/Gemfile.lock
+/Gemfile.local
+

@@ -209,7 +209,7 @@ module ApplicationHelper
     flash.each do |k,v|
       s << content_tag('div', v, :class => "flash #{k}")
     end
-    s
+    s.html_safe
   end
 
   # Renders tabs and their content
@@ -233,7 +233,7 @@ module ApplicationHelper
         { :value => url_for(:controller => 'projects', :action => 'show', :id => p, :jump => current_menu_item) }
       end
       s << '</select>'
-      s
+      s.html_safe
     end
   end
 
@@ -250,7 +250,7 @@ module ApplicationHelper
       tag_options.merge!(yield(project)) if block_given?
       s << content_tag('option', name_prefix + h(project), tag_options)
     end
-    s
+    s.html_safe
   end
 
   # Yields the given block for each project with its level in the tree
@@ -281,7 +281,7 @@ module ApplicationHelper
       end
       s << ("</li></ul>\n" * ancestors.size)
     end
-    s
+    s.html_safe
   end
 
   def principals_check_box_tags(name, principals)
@@ -289,9 +289,9 @@ module ApplicationHelper
     principals.sort.each do |principal|
       s << "<label>#{ check_box_tag name, principal.id, false } #{h principal}</label>\n"
     end
-    s
+    s.html_safe
   end
-  
+
   # Returns a string for users/groups option tags
   def principals_options_for_select(collection, selected=nil)
     s = ''
@@ -322,11 +322,11 @@ module ApplicationHelper
   end
 
   def html_hours(text)
-    text.gsub(%r{(\d+)\.(\d+)}, '<span class="hours hours-int">\1</span><span class="hours hours-dec">.\2</span>')
+    text.gsub(%r{(\d+)\.(\d+)}, '<span class="hours hours-int">\1</span><span class="hours hours-dec">.\2</span>').html_safe
   end
 
   def authoring(created, author, options={})
-    l(options[:label] || :label_added_time_by, :author => link_to_user(author), :age => time_tag(created))
+    l(options[:label] || :label_added_time_by, :author => link_to_user(author), :age => time_tag(created)).html_safe
   end
 
   def time_tag(time)
@@ -377,7 +377,7 @@ module ApplicationHelper
       end
     end
 
-    html
+    html.html_safe
   end
 
   def per_page_links(selected=nil)
@@ -396,7 +396,7 @@ module ApplicationHelper
 
   def breadcrumb(*args)
     elements = args.flatten
-    elements.any? ? content_tag('p', args.join(' &#187; ') + ' &#187; ', :class => 'breadcrumb') : nil
+    elements.any? ? content_tag('p', (args.join(" \xc2\xbb ") + " \xc2\xbb ").html_safe, :class => 'breadcrumb') : nil
   end
 
   def other_formats_links(&block)
@@ -518,7 +518,7 @@ module ApplicationHelper
     while tag = tags.pop
       parsed << "</#{tag}>"
     end
-    parsed
+    parsed.html_safe
   end
 
   def parse_inline_attachments(text, project, obj, attr, only_path, options)
@@ -535,9 +535,9 @@ module ApplicationHelper
           if !desc.blank? && alttext.blank?
             alt = " title=\"#{desc}\" alt=\"#{desc}\""
           end
-          "src=\"#{image_url}\"#{alt}"
+          "src=\"#{image_url}\"#{alt}".html_safe
         else
-          m
+          m.html_safe
         end
       end
     end
@@ -582,10 +582,10 @@ module ApplicationHelper
           link_to(h(title || page), url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
         else
           # project or wiki doesn't exist
-          all
+          all.html_safe
         end
       else
-        all
+        all.html_safe
       end
     end
   end
@@ -709,7 +709,7 @@ module ApplicationHelper
           end
         end
       end
-      leading + (link || "#{project_prefix}#{prefix}#{sep}#{identifier}")
+      (leading + (link || "#{project_prefix}#{prefix}#{sep}#{identifier}")).html_safe
     end
   end
 
@@ -794,7 +794,7 @@ module ApplicationHelper
 
   def check_all_links(form_name)
     link_to_function(l(:button_check_all), "checkAll('#{form_name}', true)") +
-    " | " +
+    " | ".html_safe +
     link_to_function(l(:button_uncheck_all), "checkAll('#{form_name}', false)")
   end
 
@@ -807,11 +807,11 @@ module ApplicationHelper
     legend = options[:legend] || ''
     content_tag('table',
       content_tag('tr',
-        (pcts[0] > 0 ? content_tag('td', '', :style => "width: #{pcts[0]}%;", :class => 'closed') : '') +
-        (pcts[1] > 0 ? content_tag('td', '', :style => "width: #{pcts[1]}%;", :class => 'done') : '') +
-        (pcts[2] > 0 ? content_tag('td', '', :style => "width: #{pcts[2]}%;", :class => 'todo') : '')
-      ), :class => 'progress', :style => "width: #{width};") +
-      content_tag('p', legend, :class => 'pourcent')
+        (pcts[0] > 0 ? content_tag('td', '', :style => "width: #{pcts[0]}%;", :class => 'closed') : ''.html_safe) +
+        (pcts[1] > 0 ? content_tag('td', '', :style => "width: #{pcts[1]}%;", :class => 'done') : ''.html_safe) +
+        (pcts[2] > 0 ? content_tag('td', '', :style => "width: #{pcts[2]}%;", :class => 'todo') : ''.html_safe)
+      ), :class => 'progress', :style => "width: #{width};").html_safe +
+      content_tag('p', legend, :class => 'pourcent').html_safe
   end
 
   def checked_image(checked=true)
@@ -891,7 +891,7 @@ module ApplicationHelper
   def has_content?(name)
     (@has_content && @has_content[name]) || false
   end
-  
+
   def email_delivery_enabled?
     !!ActionMailer::Base.perform_deliveries
   end
@@ -917,13 +917,13 @@ module ApplicationHelper
   def javascript_heads
     tags = javascript_include_tag(:defaults)
     unless User.current.pref.warn_on_leaving_unsaved == '0'
-      tags << "\n" + javascript_tag("Event.observe(window, 'load', function(){ new WarnLeavingUnsaved('#{escape_javascript( l(:text_warn_on_leaving_unsaved) )}'); });")
+      tags << "\n".html_safe + javascript_tag("Event.observe(window, 'load', function(){ new WarnLeavingUnsaved('#{escape_javascript( l(:text_warn_on_leaving_unsaved) )}'); });")
     end
     tags
   end
 
   def favicon
-    "<link rel='shortcut icon' href='#{image_path('/favicon.ico')}' />"
+    "<link rel='shortcut icon' href='#{image_path('/favicon.ico')}' />".html_safe
   end
 
   def robot_exclusion_tag
