@@ -196,14 +196,15 @@ a.issue.closed, a.issue.closed:link, a.issue.closed:visited { color: #999; text-
 	
 }
 
-#content ul, ol .projects {
+#content ul.projects {
 	padding-left: 0;
 	list-style-type: none;
 }
 
+
+
 div.description {
 	border-top: 1px solid #E4E4E4;
-	border-bottom: 1px solid #E4E4E4;
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
