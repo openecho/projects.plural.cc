@@ -201,7 +201,9 @@ a.issue.closed, a.issue.closed:link, a.issue.closed:visited { color: #999; text-
 	list-style-type: none;
 }
 
-
+ul.toc {
+	padding-left: 5px;
+}
 
 div.description {
 	border-top: 1px solid #E4E4E4;
