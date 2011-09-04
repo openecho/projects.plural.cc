@@ -8,6 +8,7 @@
 
 #content > h2 {
 	padding-top: 10px;
+	font-weight:bold;
 }
 
 #main {
@@ -209,9 +210,13 @@ div.description {
 	border-top: 1px solid #E4E4E4;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	padding-left: 5px;
+	background-color: #F0F0F0;
 }
 
-
+h1.takespace {
+	min-height: 26px; 
+}
 
 
 
