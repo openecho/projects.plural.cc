@@ -218,6 +218,33 @@ h1.takespace {
 	min-height: 26px; 
 }
 
+#redminemenu {
+	padding-left: 10px;
+	top: 5px;
+}
+
+#redminemenu ul {
+	display: inline-block;
+	position: relative;
+}
+
+#redminemenu li {
+	display: inline-block;
+	position: relative;
+}
+
+#redminemenu a {
+	border: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+	background-color: none !important;
+}
+
+
+#login-form table {margin-top:5em; padding:1em; margin-left: auto; margin-right: auto; border: 1px solid #E4E4E4; background-color: #F6F6F6; }
+#login-form table td {padding: 6px;}
+#login-form label {font-weight: bold;}
+#login-form input#username, #login-form input#password { width: 300px; }
 
 
 /***** Tables *****/
