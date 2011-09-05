@@ -203,7 +203,7 @@ a.issue.closed, a.issue.closed:link, a.issue.closed:visited { color: #999; text-
 }
 
 ul.toc {
-	padding-left: 3px;
+	padding-left: 0px !important;
 }
 
 div.description {
