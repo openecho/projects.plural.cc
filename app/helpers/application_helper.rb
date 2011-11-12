@@ -200,7 +200,7 @@ module ApplicationHelper
       end
       content << "</ul>\n"
     end
-    content
+    content.html_safe
   end
 
   # Renders flash messages
@@ -388,10 +388,18 @@ module ApplicationHelper
   end
 
   def reorder_links(name, url)
-    link_to(image_tag('2uparrow.png',   :alt => l(:label_sort_highest)), url.merge({"#{name}[move_to]" => 'highest'}), :method => :post, :title => l(:label_sort_highest)) +
-    link_to(image_tag('1uparrow.png',   :alt => l(:label_sort_higher)),  url.merge({"#{name}[move_to]" => 'higher'}),  :method => :post, :title => l(:label_sort_higher)) +
-    link_to(image_tag('1downarrow.png', :alt => l(:label_sort_lower)),   url.merge({"#{name}[move_to]" => 'lower'}),   :method => :post, :title => l(:label_sort_lower)) +
-    link_to(image_tag('2downarrow.png', :alt => l(:label_sort_lowest)),  url.merge({"#{name}[move_to]" => 'lowest'}),  :method => :post, :title => l(:label_sort_lowest))
+    link_to(image_tag('2uparrow.png', :alt => l(:label_sort_highest)),
+            url.merge({"#{name}[move_to]" => 'highest'}),
+            :method => :post, :title => l(:label_sort_highest)) +
+    link_to(image_tag('1uparrow.png',   :alt => l(:label_sort_higher)),
+            url.merge({"#{name}[move_to]" => 'higher'}),
+           :method => :post, :title => l(:label_sort_higher)) +
+    link_to(image_tag('1downarrow.png', :alt => l(:label_sort_lower)),
+            url.merge({"#{name}[move_to]" => 'lower'}),
+            :method => :post, :title => l(:label_sort_lower)) +
+    link_to(image_tag('2downarrow.png', :alt => l(:label_sort_lowest)),
+            url.merge({"#{name}[move_to]" => 'lowest'}),
+           :method => :post, :title => l(:label_sort_lowest))
   end
 
   def breadcrumb(*args)
@@ -415,20 +423,20 @@ module ApplicationHelper
         root = ancestors.shift
         b << link_to_project(root, {:jump => current_menu_item}, :class => 'root')
         if ancestors.size > 2
-          b << '&#8230;'
+          b << "\xe2\x80\xa6"
           ancestors = ancestors[-2, 2]
         end
         b += ancestors.collect {|p| link_to_project(p, {:jump => current_menu_item}, :class => 'ancestor') }
       end
       b << h(@project)
-      b.join(' &#187; ')
+      b.join(" \xc2\xbb ").html_safe
     end
   end
 
   def html_title(*args)
     if args.empty?
       title = []
-      title << h(@project.name) if @project
+      title << @project.name if @project
       title += @html_title if @html_title
       title << Setting.app_title
       title.select {|t| !t.blank? }.join(' - ')
@@ -570,16 +578,21 @@ module ApplicationHelper
           if page =~ /^(.+?)\#(.+)$/
             page, anchor = $1, $2
           end
+          anchor = sanitize_anchor_name(anchor) if anchor.present?
           # check if page exists
           wiki_page = link_project.wiki.find_page(page)
-          url = case options[:wiki_links]
-            when :local; "#{title}.html"
-            when :anchor; "##{title}"   # used for single-file wiki export
+          url = if anchor.present? && wiki_page.present? && (obj.is_a?(WikiContent) || obj.is_a?(WikiContent::Version)) && obj.page == wiki_page
+            "##{anchor}"
+          else
+            case options[:wiki_links]
+            when :local; "#{page.present? ? Wiki.titleize(page) : ''}.html" + (anchor.present? ? "##{anchor}" : '')
+            when :anchor; "##{page.present? ? Wiki.titleize(page) : title}" + (anchor.present? ? "_#{anchor}" : '') # used for single-file wiki export
             else
               wiki_page_id = page.present? ? Wiki.titleize(page) : nil
               url_for(:only_path => only_path, :controller => 'wiki', :action => 'show', :project_id => link_project, :id => wiki_page_id, :anchor => anchor)
             end
-          link_to(h(title || page), url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
+          end
+          link_to(title || h(page), url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
         else
           # project or wiki doesn't exist
           all.html_safe
@@ -723,7 +736,9 @@ module ApplicationHelper
     text.gsub!(HEADING_RE) do
       level, attrs, content = $1.to_i, $2, $3
       item = strip_tags(content).strip
-      anchor = item.gsub(%r{[^\w\s\-]}, '').gsub(%r{\s+(\-+\s*)?}, '-')
+      anchor = sanitize_anchor_name(item)
+      # used for single-file wiki export
+      anchor = "#{obj.page.title}_#{anchor}" if options[:wiki_links] == :anchor && (obj.is_a?(WikiContent) || obj.is_a?(WikiContent::Version))
       @parsed_headings << [level, anchor, item]
       "<a name=\"#{anchor}\"></a>\n<h#{level} #{attrs}>#{content}<a href=\"##{anchor}\" class=\"wiki-anchor\">&para;</a></h#{level}>"
     end
@@ -767,7 +782,8 @@ module ApplicationHelper
     text.to_s.
       gsub(/\r\n?/, "\n").                    # \r\n and \r -> \n
       gsub(/\n\n+/, "<br /><br />").          # 2+ newline  -> 2 br
-      gsub(/([^\n]\n)(?=[^\n])/, '\1<br />')  # 1 newline   -> br
+      gsub(/([^\n]\n)(?=[^\n])/, '\1<br />'). # 1 newline   -> br
+      html_safe
   end
 
   def lang_options_for_select(blank=true)
@@ -911,6 +927,10 @@ module ApplicationHelper
     else
       ''
     end
+  end
+
+  def sanitize_anchor_name(anchor)
+    anchor.gsub(%r{[^\w\s\-]}, '').gsub(%r{\s+(\-+\s*)?}, '-')
   end
 
   # Returns the javascript tags that are included in the html layout head

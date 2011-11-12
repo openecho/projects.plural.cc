@@ -1,7 +1,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class IssueMovesControllerTest < ActionController::TestCase
-  fixtures :all
+  fixtures :projects, :trackers, :issue_statuses, :issues,
+           :enumerations, :users, :issue_categories,
+           :projects_trackers,
+           :roles,
+           :member_roles,
+           :members,
+           :enabled_modules,
+           :workflows,
+           :journals, :journal_details
 
   def setup
     User.current = nil
@@ -100,7 +108,10 @@ class IssueMovesControllerTest < ActionController::TestCase
       issue_before_move = Issue.find(1)
       assert_difference 'Issue.count', 1 do
         assert_no_difference 'Project.find(1).issues.count' do
-          post :create, :ids => [1], :new_project_id => 2, :copy_options => {:copy => '1'}, :new_tracker_id => '', :assigned_to_id => '', :status_id => '', :start_date => '', :due_date => ''
+          post :create, :ids => [1], :new_project_id => 2,
+               :copy_options => {:copy => '1'}, :new_tracker_id => '',
+               :assigned_to_id => '', :status_id => '',
+               :start_date => '', :due_date => ''
         end
       end
       issue_after_move = Issue.first(:order => 'id desc', :conditions => {:project_id => 2})
@@ -111,13 +122,17 @@ class IssueMovesControllerTest < ActionController::TestCase
 
     should "allow changing the issue's attributes" do
       # Fixes random test failure with Mysql
-      # where Issue.all(:limit => 2, :order => 'id desc', :conditions => {:project_id => 2}) doesn't return the expected results
+      # where Issue.all(:limit => 2, :order => 'id desc', :conditions => {:project_id => 2})
+      # doesn't return the expected results
       Issue.delete_all("project_id=2")
 
       @request.session[:user_id] = 2
       assert_difference 'Issue.count', 2 do
         assert_no_difference 'Project.find(1).issues.count' do
-          post :create, :ids => [1, 2], :new_project_id => 2, :copy_options => {:copy => '1'}, :new_tracker_id => '', :assigned_to_id => 4, :status_id => 3, :start_date => '2009-12-01', :due_date => '2009-12-31'
+          post :create, :ids => [1, 2], :new_project_id => 2,
+               :copy_options => {:copy => '1'}, :new_tracker_id => '',
+               :assigned_to_id => 4, :status_id => 3,
+               :start_date => '2009-12-01', :due_date => '2009-12-31'
         end
       end
 
@@ -135,7 +150,10 @@ class IssueMovesControllerTest < ActionController::TestCase
     should "allow adding a note when copying" do
       @request.session[:user_id] = 2
       assert_difference 'Issue.count', 1 do
-        post :create, :ids => [1], :copy_options => {:copy => '1'}, :notes => 'Copying one issue', :new_tracker_id => '', :assigned_to_id => 4, :status_id => 3, :start_date => '2009-12-01', :due_date => '2009-12-31'
+        post :create, :ids => [1], :copy_options => {:copy => '1'},
+             :notes => 'Copying one issue', :new_tracker_id => '',
+             :assigned_to_id => 4, :status_id => 3,
+             :start_date => '2009-12-01', :due_date => '2009-12-31'
       end
 
       issue = Issue.first(:order => 'id DESC')

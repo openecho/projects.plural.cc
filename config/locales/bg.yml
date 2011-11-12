@@ -176,6 +176,7 @@ bg:
   error_scm_not_found: Несъществуващ обект в хранилището.
   error_scm_command_failed: "Грешка при опит за комуникация с хранилище: %{value}"
   error_scm_annotate: "Обектът не съществува или не може да бъде анотиран."
+  error_scm_annotate_big_text_file: "Файлът не може да бъде анотиран, понеже надхвърля максималния размер за текстови файлове."
   error_issue_not_found_in_project: 'Задачата не е намерена или не принадлежи на този проект'
   error_no_tracker_in_project: Няма асоциирани тракери с този проект. Проверете настройките на проекта.
   error_no_default_issue_status: Няма установено подразбиращо се състояние за задачите. Моля проверете вашата конфигурация (Вижте "Администрация -> Състояния на задачи").
@@ -374,6 +375,7 @@ bg:
   setting_commit_logtime_activity_id: Дейност при отчитане на работното време
   setting_gantt_items_limit: Максимален брой обекти, които да се показват в мрежов график
   setting_issue_group_assignment: Разрешено назначаването на задачи на групи
+  setting_default_issue_start_date_to_creation_date: Начална дата на новите задачи по подразбиране да бъде днешната дата
   
   permission_add_project: Създаване на проект
   permission_add_subprojects: Създаване на подпроекти
@@ -823,6 +825,8 @@ bg:
   label_issues_visibility_public: Всички не-лични задачи
   label_issues_visibility_own: Задачи, създадени от или назначени на потребителя
   label_git_report_last_commit: Извеждане на последното поверяване за файлове и папки
+  label_parent_revision: Ревизия родител
+  label_child_revision: Ревизия наследник
 
   button_login: Вход
   button_submit: Прикачване
@@ -978,3 +982,20 @@ bg:
   enumeration_doc_categories: Категории документи
   enumeration_activities: Дейности (time tracking)
   enumeration_system_activity: Системна активност
+  description_filter: Филтър
+  description_search: Търсене
+  description_choose_project: Проекти
+  description_project_scope: Обхват на търсенето
+  description_notes: Бележки
+  description_message_content: Съдържание на съобщението
+  description_query_sort_criteria_attribute: Атрибут на сортиране
+  description_query_sort_criteria_direction: Посока на сортиране
+  description_user_mail_notification: Конфигурация известията по пощата
+  description_available_columns: Налични колони
+  description_selected_columns: Избрани колони
+  description_issue_category_reassign: Изберете категория
+  description_wiki_subpages_reassign: Изберете нова родителска страница
+  description_date_range_list: Изберете диапазон от списъка
+  description_date_range_interval: Изберете диапазон чрез задаване на начална и крайна дати
+  description_date_from: Въведете начална дата
+  description_date_to: Въведете крайна дата

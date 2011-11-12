@@ -18,7 +18,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TimeEntryTest < ActiveSupport::TestCase
-  fixtures :issues, :projects, :users, :time_entries
+  fixtures :issues, :projects, :users, :time_entries,
+           :members, :roles, :member_roles, :auth_sources,
+           :trackers, :issue_statuses,
+           :projects_trackers,
+           :journals, :journal_details,
+           :issue_categories, :enumerations,
+           :groups_users,
+           :enabled_modules,
+           :workflows
 
   def test_hours_format
     assertions = { "2"      => 2.0,
@@ -83,6 +91,39 @@ class TimeEntryTest < ActiveSupport::TestCase
     c = TimeEntry.new
     c.spent_on = Time.now
     assert_equal Date.today, c.spent_on
+  end
+
+  def test_validate_time_entry
+    anon     = User.anonymous
+    project  = Project.find(1)
+    issue    = Issue.new(:project_id => 1, :tracker_id => 1, :author_id => anon.id, :status_id => 1,
+                         :priority => IssuePriority.all.first, :subject => 'test_create',
+                         :description => 'IssueTest#test_create', :estimated_hours => '1:30')
+    assert issue.save
+    activity = TimeEntryActivity.find_by_name('Design')
+    te = TimeEntry.create(:spent_on => '2010-01-01',
+                          :hours    => 100000,
+                          :issue    => issue,
+                          :project  => project,
+                          :user     => anon,
+                          :activity => activity)
+    assert_equal 1, te.errors.count
+  end
+
+  def test_set_project_if_nil
+    anon     = User.anonymous
+    project  = Project.find(1)
+    issue    = Issue.new(:project_id => 1, :tracker_id => 1, :author_id => anon.id, :status_id => 1,
+                         :priority => IssuePriority.all.first, :subject => 'test_create',
+                         :description => 'IssueTest#test_create', :estimated_hours => '1:30')
+    assert issue.save
+    activity = TimeEntryActivity.find_by_name('Design')
+    te = TimeEntry.create(:spent_on => '2010-01-01',
+                          :hours    => 10,
+                          :issue    => issue,
+                          :user     => anon,
+                          :activity => activity)
+    assert_equal project.id, te.project.id
   end
 
   context "#earilest_date_for_project" do

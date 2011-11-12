@@ -58,6 +58,7 @@ class Issue < ActiveRecord::Base
   validates_length_of :subject, :maximum => 255
   validates_inclusion_of :done_ratio, :in => 0..100
   validates_numericality_of :estimated_hours, :allow_nil => true
+  validate :validate_issue
 
   named_scope :visible, lambda {|*args| { :include => :project,
                                           :conditions => Issue.visible_condition(args.shift || User.current, *args) } }
@@ -94,10 +95,10 @@ class Issue < ActiveRecord::Base
         nil
       when 'default'
         user_ids = [user.id] + user.groups.map(&:id)
-        "(#{table_name}.is_private = #{connection.quoted_false} OR #{table_name}.author_id = #{user.id} OR #{table_name}.assigned_to_id IN (#{user_ids}))"
+        "(#{table_name}.is_private = #{connection.quoted_false} OR #{table_name}.author_id = #{user.id} OR #{table_name}.assigned_to_id IN (#{user_ids.join(',')}))"
       when 'own'
         user_ids = [user.id] + user.groups.map(&:id)
-        "(#{table_name}.author_id = #{user.id} OR #{table_name}.assigned_to_id IN (#{user_ids}))"
+        "(#{table_name}.author_id = #{user.id} OR #{table_name}.assigned_to_id IN (#{user_ids.join(',')}))"
       else
         '1=0'
       end
@@ -337,7 +338,7 @@ class Issue < ActiveRecord::Base
     Setting.issue_done_ratio == 'issue_field'
   end
 
-  def validate
+  def validate_issue
     if self.due_date.nil? && @attributes['due_date'] && !@attributes['due_date'].empty?
       errors.add :due_date, :not_a_date
     end
@@ -354,7 +355,7 @@ class Issue < ActiveRecord::Base
       if !assignable_versions.include?(fixed_version)
         errors.add :fixed_version_id, :inclusion
       elsif reopened? && fixed_version.closed?
-        errors.add_to_base I18n.t(:error_can_not_reopen_issue_on_closed_version)
+        errors.add :base, I18n.t(:error_can_not_reopen_issue_on_closed_version)
       end
     end
 
@@ -633,7 +634,7 @@ class Issue < ActiveRecord::Base
           end
         rescue ActiveRecord::StaleObjectError
           attachments[:files].each(&:destroy)
-          errors.add_to_base l(:notice_locking_conflict)
+          errors.add :base, l(:notice_locking_conflict)
           raise ActiveRecord::Rollback
         end
       end

@@ -45,6 +45,8 @@ class IssueRelation < ActiveRecord::Base
 
   attr_protected :issue_from_id, :issue_to_id
 
+  before_save :handle_issue_order
+
   def visible?(user=User.current)
     (issue_from.nil? || issue_from.visible?(user)) && (issue_to.nil? || issue_to.visible?(user))
   end
@@ -69,11 +71,11 @@ class IssueRelation < ActiveRecord::Base
       errors.add :issue_to_id, :not_same_project unless issue_from.project_id == issue_to.project_id || Setting.cross_project_issue_relations?
       #detect circular dependencies depending wether the relation should be reversed
       if TYPES.has_key?(relation_type) && TYPES[relation_type][:reverse]
-        errors.add_to_base :circular_dependency if issue_from.all_dependent_issues.include? issue_to
+        errors.add :base, :circular_dependency if issue_from.all_dependent_issues.include? issue_to
       else
-        errors.add_to_base :circular_dependency if issue_to.all_dependent_issues.include? issue_from
+        errors.add :base, :circular_dependency if issue_to.all_dependent_issues.include? issue_from
       end
-      errors.add_to_base :cant_link_an_issue_with_a_descendant if issue_from.is_descendant_of?(issue_to) || issue_from.is_ancestor_of?(issue_to)
+      errors.add :base, :cant_link_an_issue_with_a_descendant if issue_from.is_descendant_of?(issue_to) || issue_from.is_ancestor_of?(issue_to)
     end
   end
 
@@ -96,7 +98,7 @@ class IssueRelation < ActiveRecord::Base
     TYPES[relation_type] ? TYPES[relation_type][(self.issue_from_id == issue.id) ? :name : :sym_name] : :unknow
   end
 
-  def before_save
+  def handle_issue_order
     reverse_if_needed
 
     if TYPE_PRECEDES == relation_type

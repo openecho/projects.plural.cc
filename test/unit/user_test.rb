@@ -18,7 +18,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class UserTest < ActiveSupport::TestCase
-  fixtures :users, :members, :projects, :roles, :member_roles, :auth_sources
+  fixtures :users, :members, :projects, :roles, :member_roles, :auth_sources,
+            :trackers, :issue_statuses,
+            :projects_trackers,
+            :watchers,
+            :issue_categories, :enumerations, :issues,
+            :journals, :journal_details,
+            :groups_users,
+            :enabled_modules,
+            :workflows
 
   def setup
     @admin = User.find(1)
@@ -336,7 +344,7 @@ class UserTest < ActiveSupport::TestCase
     u = User.new
     u.mail_notification = 'foo'
     u.save
-    assert_not_nil u.errors.on(:mail_notification)
+    assert_not_nil u.errors[:mail_notification]
   end
 
   context "User#try_to_login" do
@@ -347,7 +355,9 @@ class UserTest < ActiveSupport::TestCase
     end
 
     should "select the exact matching user first" do
-      case_sensitive_user = User.generate_with_protected!(:login => 'changed', :password => 'admin', :password_confirmation => 'admin')
+      case_sensitive_user = User.generate_with_protected!(
+                                   :login => 'changed', :password => 'admin',
+                                   :password_confirmation => 'admin')
       # bypass validations to make it appear like existing data
       case_sensitive_user.update_attribute(:login, 'ADMIN')
 
@@ -368,6 +378,16 @@ class UserTest < ActiveSupport::TestCase
     user = User.try_to_login("admin", "hello")
     assert_kind_of User, user
     assert_equal "admin", user.login
+  end
+
+  def test_validate_password_length
+    with_settings :password_min_length => '100' do
+      user = User.new(:firstname => "new100", :lastname => "user100", :mail => "newuser100@somenet.foo")
+      user.login = "newuser100"
+      user.password, user.password_confirmation = "password100", "password100"
+      assert !user.save
+      assert_equal 1, user.errors.count
+    end
   end
 
   def test_name_format
@@ -458,6 +478,17 @@ class UserTest < ActiveSupport::TestCase
     anon = User.anonymous
     assert !anon.new_record?
     assert_kind_of AnonymousUser, anon
+  end
+
+  def test_ensure_single_anonymous_user
+    AnonymousUser.delete_all
+    anon1 = User.anonymous
+    assert !anon1.new_record?
+    assert_kind_of AnonymousUser, anon1
+    anon2 = AnonymousUser.create(
+                :lastname => 'Anonymous', :firstname => '',
+                :mail => '', :login => '', :status => 0)
+    assert_equal 1, anon2.errors.count
   end
 
   should_have_one :rss_token

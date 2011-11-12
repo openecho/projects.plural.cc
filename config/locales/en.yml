@@ -176,6 +176,7 @@ en:
   error_scm_not_found: "The entry or revision was not found in the repository."
   error_scm_command_failed: "An error occurred when trying to access the repository: %{value}"
   error_scm_annotate: "The entry does not exist or cannot be annotated."
+  error_scm_annotate_big_text_file: "The entry cannot be annotated, as it exceeds the maximum text file size."
   error_issue_not_found_in_project: 'The issue was not found or does not belong to this project'
   error_no_tracker_in_project: 'No tracker is associated to this project. Please check the Project settings.'
   error_no_default_issue_status: 'No default issue status is defined. Please check your configuration (Go to "Administration -> Issue statuses").'
@@ -374,6 +375,7 @@ en:
   setting_commit_logtime_activity_id: Activity for logged time
   setting_gantt_items_limit: Maximum number of items displayed on the gantt chart
   setting_issue_group_assignment: Allow issue assignment to groups
+  setting_default_issue_start_date_to_creation_date: Use current date as start date for new issues
 
   permission_add_project: Create project
   permission_add_subprojects: Create subprojects
@@ -823,6 +825,8 @@ en:
   label_issues_visibility_public: All non private issues
   label_issues_visibility_own: Issues created by or assigned to the user
   label_git_report_last_commit: Report last commit for files and directories
+  label_parent_revision: Parent
+  label_child_revision: Child
 
   button_login: Login
   button_submit: Submit
@@ -978,3 +982,20 @@ en:
   enumeration_doc_categories: Document categories
   enumeration_activities: Activities (time tracking)
   enumeration_system_activity: System Activity
+  description_filter: Filter
+  description_search: Searchfield
+  description_choose_project: Projects
+  description_project_scope: Search scope
+  description_notes: Notes
+  description_message_content: Message content
+  description_query_sort_criteria_attribute: Sort attribute
+  description_query_sort_criteria_direction: Sort direction
+  description_user_mail_notification: Mail notification settings
+  description_available_columns: Available Columns
+  description_selected_columns: Selected Columns
+  description_issue_category_reassign: Choose issue category
+  description_wiki_subpages_reassign: Choose new parent page
+  description_date_range_list: Choose range from list
+  description_date_range_interval: Choose range by selecting start and end date
+  description_date_from: Enter start date
+  description_date_to: Enter end date

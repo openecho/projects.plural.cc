@@ -18,7 +18,18 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class ProjectTest < ActiveSupport::TestCase
-  fixtures :all
+  fixtures :projects, :trackers, :issue_statuses, :issues,
+           :enumerations, :users, :issue_categories,
+           :projects_trackers,
+           :roles,
+           :member_roles,
+           :members,
+           :enabled_modules,
+           :workflows,
+           :versions,
+           :wikis, :wiki_pages, :wiki_contents, :wiki_content_versions,
+           :groups_users,
+           :boards
 
   def setup
     @ecookbook = Project.find(1)
@@ -108,7 +119,7 @@ class ProjectTest < ActiveSupport::TestCase
       p = Project.new
       p.identifier = identifier
       p.valid?
-      assert_equal valid, p.errors.on('identifier').nil?
+      assert_equal valid, p.errors['identifier'].nil?
     end
   end
 
@@ -886,6 +897,7 @@ class ProjectTest < ActiveSupport::TestCase
         assert query
         assert_equal @project, query.project
       end
+      assert_equal @source_project.queries.map(&:user_id).sort, @project.queries.map(&:user_id).sort
     end
 
     should "copy versions" do

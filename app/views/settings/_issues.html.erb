@@ -5,6 +5,8 @@
 
 <p><%= setting_check_box :issue_group_assignment %></p>
 
+<p><%= setting_check_box :default_issue_start_date_to_creation_date %></p>
+
 <p><%= setting_check_box :display_subprojects_issues %></p>
 
 <p><%= setting_select :issue_done_ratio, Issue::DONE_RATIO_OPTIONS.collect {|i| [l("setting_issue_done_ratio_#{i}"), i]} %></p>
@@ -15,7 +17,7 @@
 </div>
 
 <fieldset class="box settings"><legend><%= l(:setting_issue_list_default_columns) %></legend>
-<%= setting_multiselect(:issue_list_default_columns, 
+<%= setting_multiselect(:issue_list_default_columns,
         Query.new.available_columns.collect {|c| [c.caption, c.name.to_s]}, :label => false) %>
 </fieldset>
 

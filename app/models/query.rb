@@ -92,6 +92,7 @@ class Query < ActiveRecord::Base
 
   validates_presence_of :name, :on => :save
   validates_length_of :name, :maximum => 255
+  validate :validate_query_filters
 
   @@operators = { "="   => :label_equals,
                   "!"   => :label_not_equals,
@@ -168,7 +169,7 @@ class Query < ActiveRecord::Base
     @is_for_all = project.nil?
   end
 
-  def validate
+  def validate_query_filters
     filters.each_key do |field|
       if values_for(field)
         case type_for(field)
@@ -307,9 +308,12 @@ class Query < ActiveRecord::Base
   end
 
   def add_short_filter(field, expression)
-    return unless expression
-    parms = expression.scan(/^(o|c|!\*|!|\*)?(.*)$/).first
-    add_filter field, (parms[0] || "="), [parms[1] || ""]
+    return unless expression && available_filters.has_key?(field)
+    field_type = available_filters[field][:type]
+    @@operators_by_filter_type[field_type].sort.reverse.detect do |operator|
+      next unless expression =~ /^#{Regexp.escape(operator)}(.*)$/
+      add_filter field, operator, $1.present? ? $1.split('|') : ['']
+    end || add_filter(field, '=', expression.split('|'))
   end
 
   # Add multiple filters using +add_filter+
@@ -377,14 +381,17 @@ class Query < ActiveRecord::Base
   end
 
   def columns
-    if has_default_columns?
-      available_columns.select do |c|
-        # Adds the project column by default for cross-project lists
-        Setting.issue_list_default_columns.include?(c.name.to_s) || (c.name == :project && project.nil?)
-      end
-    else
-      # preserve the column_names order
-      column_names.collect {|name| available_columns.find {|col| col.name == name}}.compact
+    # preserve the column_names order
+    (has_default_columns? ? default_columns_names : column_names).collect do |name|
+       available_columns.find { |col| col.name == name }
+    end.compact
+  end
+
+  def default_columns_names
+    @default_columns_names ||= begin
+      default_columns = Setting.issue_list_default_columns.map(&:to_sym)
+
+      project.present? ? default_columns : [:project] | default_columns
     end
   end
 
@@ -393,7 +400,7 @@ class Query < ActiveRecord::Base
       names = names.select {|n| n.is_a?(Symbol) || !n.blank? }
       names = names.collect {|n| n.is_a?(Symbol) ? n : n.to_sym }
       # Set column_names to nil if default columns
-      if names.map(&:to_s) == Setting.issue_list_default_columns
+      if names == default_columns_names
         names = nil
       end
     end
@@ -765,10 +772,13 @@ class Query < ActiveRecord::Base
   def date_clause(table, field, from, to)
     s = []
     if from
-      s << ("#{table}.#{field} > '%s'" % [connection.quoted_date((from - 1).to_time.end_of_day)])
+      from_yesterday = from - 1
+      from_yesterday_utc = Time.gm(from_yesterday.year, from_yesterday.month, from_yesterday.day)
+      s << ("#{table}.#{field} > '%s'" % [connection.quoted_date(from_yesterday_utc.end_of_day)])
     end
     if to
-      s << ("#{table}.#{field} <= '%s'" % [connection.quoted_date(to.to_time.end_of_day)])
+      to_utc = Time.gm(to.year, to.month, to.day)
+      s << ("#{table}.#{field} <= '%s'" % [connection.quoted_date(to_utc.end_of_day)])
     end
     s.join(' AND ')
   end

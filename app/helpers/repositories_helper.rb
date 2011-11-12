@@ -37,9 +37,9 @@ module RepositoriesHelper
     unless properties.nil? || properties.empty?
       content = ''
       properties.keys.sort.each do |property|
-        content << content_tag('li', "<b>#{h property}</b>: <span>#{h properties[property]}</span>")
+        content << content_tag('li', "<b>#{h property}</b>: <span>#{h properties[property]}</span>".html_safe)
       end
-      content_tag('ul', content, :class => 'properties')
+      content_tag('ul', content.html_safe, :class => 'properties')
     end
   end
 
@@ -103,17 +103,17 @@ module RepositoriesHelper
                              :path => path_param,
                              :rev => @changeset.identifier) unless c.action == 'D'
         text << " - #{h(c.revision)}" unless c.revision.blank?
-        text << ' (' + link_to(l(:label_diff), :controller => 'repositories',
+        text << ' ('.html_safe + link_to(l(:label_diff), :controller => 'repositories',
                                        :action => 'diff',
                                        :id => @project,
                                        :path => path_param,
-                                       :rev => @changeset.identifier) + ') ' if c.action == 'M'
-        text << ' ' + content_tag('span', h(c.from_path), :class => 'copied-from') unless c.from_path.blank?
+                                       :rev => @changeset.identifier) + ') '.html_safe if c.action == 'M'
+        text << ' '.html_safe + content_tag('span', h(c.from_path), :class => 'copied-from') unless c.from_path.blank?
         output << "<li class='#{style}'>#{text}</li>"
       end
     end
     output << '</ul>'
-    output
+    output.html_safe
   end
 
   def to_utf8(str)
@@ -188,7 +188,8 @@ module RepositoriesHelper
   def subversion_field_tags(form, repository)
       content_tag('p', form.text_field(:url, :size => 60, :required => true,
                        :disabled => (repository && !repository.root_url.blank?)) +
-                       '<br />(file:///, http://, https://, svn://, svn+[tunnelscheme]://)') +
+                       '<br />'.html_safe +
+                       '(file:///, http://, https://, svn://, svn+[tunnelscheme]://)') +
       content_tag('p', form.text_field(:login, :size => 30)) +
       content_tag('p', form.password_field(
                             :password, :size => 30, :name => 'ignore',
@@ -213,12 +214,12 @@ module RepositoriesHelper
                        :size => 60, :required => true,
                        :disabled => (repository && !repository.root_url.blank?)
                          ) +
-                     '<br />' + l(:text_mercurial_repository_note)) +
+                     '<br />'.html_safe + l(:text_mercurial_repository_note)) +
     content_tag('p', form.select(
                         :path_encoding, [nil] + Setting::ENCODINGS,
                         :label => l(:field_scm_path_encoding)
                         ) +
-                     '<br />' + l(:text_scm_path_encoding_note))
+                     '<br />'.html_safe + l(:text_scm_path_encoding_note))
   end
 
   def git_field_tags(form, repository)
@@ -227,13 +228,13 @@ module RepositoriesHelper
                        :size => 60, :required => true,
                        :disabled => (repository && !repository.root_url.blank?)
                          ) +
-                      '<br />' + 
+                      '<br />'.html_safe +
                       l(:text_git_repository_note)) +
     content_tag('p', form.select(
                         :path_encoding, [nil] + Setting::ENCODINGS,
                         :label => l(:field_scm_path_encoding)
                         ) +
-                     '<br />' + l(:text_scm_path_encoding_note)) +
+                     '<br />'.html_safe + l(:text_scm_path_encoding_note)) +
     content_tag('p', form.check_box(
                         :extra_report_last_commit,
                         :label => l(:label_git_report_last_commit)
@@ -258,7 +259,7 @@ module RepositoriesHelper
                         :path_encoding, [nil] + Setting::ENCODINGS,
                         :label => l(:field_scm_path_encoding)
                         ) +
-                     '<br />' + l(:text_scm_path_encoding_note))
+                     '<br />'.html_safe + l(:text_scm_path_encoding_note))
   end
 
   def bazaar_field_tags(form, repository)
@@ -280,6 +281,62 @@ module RepositoriesHelper
                         :path_encoding, [nil] + Setting::ENCODINGS,
                         :label => l(:field_scm_path_encoding)
                         ) +
-                     '<br />' + l(:text_scm_path_encoding_note))
+                     '<br />'.html_safe + l(:text_scm_path_encoding_note))
+  end
+
+  def index_commits(commits, heads, href_proc = nil)
+    return nil if commits.nil? or commits.first.parents.nil?
+    map  = {}
+    commit_hashes = []
+    refs_map = {}
+    href_proc ||= Proc.new {|x|x}
+    heads.each{|r| refs_map[r.scmid] ||= []; refs_map[r.scmid] << r}
+    commits.reverse.each_with_index do |c, i|
+      h = {}
+      h[:parents] = c.parents.collect do |p|
+        [p.scmid, 0, 0]
+      end
+      h[:rdmid] = i
+      h[:space] = 0
+      h[:refs]  = refs_map[c.scmid].join(" ") if refs_map.include? c.scmid
+      h[:scmid] = c.scmid
+      h[:href]  = href_proc.call(c.scmid)
+      commit_hashes << h
+      map[c.scmid] = h
+    end
+    heads.sort! do |a,b|
+      a.to_s <=> b.to_s
+    end
+    j = 0
+    heads.each do |h|
+      if map.include? h.scmid then
+        j = mark_chain(j += 1, map[h.scmid], map)
+      end
+    end
+    # when no head matched anything use first commit
+    if j == 0 then
+       mark_chain(j += 1, map.values.first, map)
+    end
+    map
+  end
+
+  def mark_chain(mark, commit, map)
+    stack = [[mark, commit]]
+    markmax = mark
+    until stack.empty?
+      current = stack.pop
+      m, commit = current
+      commit[:space] = m  if commit[:space] == 0
+      m1 = m - 1
+      commit[:parents].each_with_index do |p, i|
+        psha = p[0]
+        if map.include? psha  and  map[psha][:space] == 0 then
+          stack << [m1 += 1, map[psha]] if i == 0
+          stack = [[m1 += 1, map[psha]]] + stack if i > 0
+        end
+      end
+      markmax = m1 if markmax < m1
+    end
+    markmax
   end
 end

@@ -60,7 +60,7 @@ ru:
     percentage:
       format:
         delimiter: ""
-        
+
     precision:
       format:
         delimiter: ""
@@ -207,7 +207,7 @@ ru:
       # Rails 2.2
       sentence_connector: "и"
       skip_last_comma: true
-      
+
       # Rails 2.3
       words_connector: ", "
       two_words_connector: " и "
@@ -281,7 +281,7 @@ ru:
   enumeration_activities: Действия (учет времени)
   enumeration_doc_categories: Категории документов
   enumeration_issue_priorities: Приоритеты задач
-  
+
   error_can_not_remove_role: Эта роль используется и не может быть удалена.
   error_can_not_delete_custom_field: Невозможно удалить настраиваемое поле
   error_can_not_delete_tracker: Этот трекер содержит задачи и не может быть удален.
@@ -903,7 +903,7 @@ ru:
   status_active: активен
   status_locked: заблокирован
   status_registered: зарегистрирован
-  
+
   text_are_you_sure_with_children: Удалить задачу и все ее подзадачи?
   text_are_you_sure: Вы уверены?
   text_assign_time_entries_to_project: Прикрепить зарегистрированное время к проекту
@@ -1051,7 +1051,7 @@ ru:
   setting_commit_logtime_enabled: Включить учет времени
   notice_gantt_chart_truncated: Диаграмма будет усечена, поскольку превышено максимальное кол-во элементов, которые могут отображаться (%{max})
   setting_gantt_items_limit: Максимальное кол-во элементов отображаемых на диаграмме Ганта
-  field_warn_on_leaving_unsaved: Предупреждать при закратии страницы с несохраненным текстом
+  field_warn_on_leaving_unsaved: Предупреждать при закрытии страницы с несохраненным текстом
   text_warn_on_leaving_unsaved: Текущая страница содержит несохраненный текст, который будет потерян, если вы покинете эту страницу.
   label_my_queries: Мои сохраненные запросы
   text_journal_changed_no_detail: "%{label} обновлено"
@@ -1060,8 +1060,8 @@ ru:
   button_collapse_all: Свернуть все
   label_additional_workflow_transitions_for_assignee: Дополнительные переходы, когда пользователь является исполнителем
   label_additional_workflow_transitions_for_author: Дополнительные переходы, когда пользователь является автором
-  label_bulk_edit_selected_time_entries: Массовое изменение выбранных записей затраченного времени времени 
-  text_time_entries_destroy_confirmation: Вы уверены что хотите удалить выбраные записи затраченного времени?
+  label_bulk_edit_selected_time_entries: Массовое изменение выбранных записей затраченного времени
+  text_time_entries_destroy_confirmation: Вы уверены что хотите удалить выбранные записи затраченного времени?
   label_role_anonymous: Аноним
   label_role_non_member: Не участник
   label_issue_note_added: Примечание добавлено
@@ -1070,7 +1070,7 @@ ru:
   label_issues_visibility_own: Задачи созданные или назначенные пользователю
   field_issues_visibility: Видимость задач
   label_issues_visibility_all: Все задачи
-  permission_set_own_issues_private: Устаовление видимости (общая/частная) для собственных задач
+  permission_set_own_issues_private: Установление видимости (общая/частная) для собственных задач
   field_is_private: Частная
   permission_set_issues_private: Установление видимости (общая/частная) для задач
   label_issues_visibility_public: Только общие задачи
@@ -1093,3 +1093,24 @@ ru:
   setting_issue_group_assignment: Разрешить назначение задач группам пользователей
   label_diff: diff
   text_git_repository_note: Repository is bare and local (e.g. /gitrepo, c:\gitrepo)
+  description_query_sort_criteria_direction: Sort direction
+  description_project_scope: Search scope
+  description_filter: Filter
+  description_user_mail_notification: Mail notification settings
+  description_date_from: Enter start date
+  description_message_content: Message content
+  description_available_columns: Available Columns
+  description_date_range_interval: Choose range by selecting start and end date
+  description_issue_category_reassign: Choose issue category
+  description_search: Searchfield
+  description_notes: Notes
+  description_date_range_list: Choose range from list
+  description_choose_project: Projects
+  description_date_to: Enter end date
+  description_query_sort_criteria_attribute: Sort attribute
+  description_wiki_subpages_reassign: Choose new parent page
+  description_selected_columns: Selected Columns
+  label_parent_revision: Parent
+  label_child_revision: Child
+  error_scm_annotate_big_text_file: The entry cannot be annotated, as it exceeds the maximum text file size.
+  setting_default_issue_start_date_to_creation_date: Use current date as start date for new issues

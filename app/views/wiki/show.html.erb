@@ -53,8 +53,9 @@
 <% end %>
 
 <% other_formats_links do |f| %>
-	<%= f.link_to 'HTML', :url => {:id => @page.title, :version => @content.version} %>
-	<%= f.link_to 'TXT', :url => {:id => @page.title, :version => @content.version} %>
+  <%= f.link_to 'PDF', :url => {:id => @page.title, :version => @content.version} %>
+  <%= f.link_to 'HTML', :url => {:id => @page.title, :version => @content.version} %>
+  <%= f.link_to 'TXT', :url => {:id => @page.title, :version => @content.version} %>
 <% end if User.current.allowed_to?(:export_wiki_pages, @project) %>
 
 <% content_for :header_tags do %>
@@ -65,4 +66,4 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<% html_title h(@page.pretty_title) %>
+<% html_title @page.pretty_title %>
